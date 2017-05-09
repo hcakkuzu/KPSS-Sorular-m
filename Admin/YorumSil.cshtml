@@ -1,0 +1,30 @@
+﻿@{
+
+       if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+
+
+        var uID=Request.QueryString["id"];
+        if(String.IsNullOrEmpty(uID)){
+            Response.Redirect("~/Admin/Yorumlar",true);
+        }else{
+            db.Execute("DELETE From Begenilme WHERE YorumID=@0",uID);
+            db.Execute("DELETE From Yorum WHERE YorumID=@0",uID);
+            Response.Redirect("~/Admin/Yorumlar",true);
+        }
+        
+        
+
+        
+
+
+
+}
+

@@ -1,0 +1,44 @@
+﻿@{
+    Layout="~/Shared/_Layout.cshtml";
+    Page.Title="Anasayfa";
+    Page.Menu=0;
+    if(WebSecurity.IsAuthenticated) {Response.Redirect("~/SonSorular",true);}
+}
+<!--<div class="col-lg-10 col-md-12 col-xs-12 col-sm-12 col-lg-offset-1">-->
+<div class="jumbotron">
+    <h1><span class="glyphicon glyphicon-education"></span> Hoşgeldiniz..</h1>
+    <p>Bu web platformunu siz KPSS sınavına hazırlanan bireylere, birbirinizle yardımlaşmanız için oluşturduk. Tamamen ücretsizdir!</p>
+</div>
+<div class="row">
+    <div class="col-6 col-sm-6 col-lg-4">
+        <h2><span class="glyphicon glyphicon-cloud-upload"></span> Soru Sor</h2>
+        <p>Diğer kullanıcılar ile çözemediğin soruları paylaş. Herkesin yardımını al. KPSS'yi kazan!</p>
+
+    </div>
+
+    <div class="col-6 col-sm-6 col-lg-4">
+        <h2><span class="glyphicon glyphicon-flag"></span> Yardım Et</h2>
+        <p>Yüzlerce kullanıcıya çözemedikleri sorularda yardım et. Kendini geliştir. KPSS'yi kazan!</p>
+
+    </div>
+
+
+    <div class="col-6 col-sm-6 col-lg-4">
+        <h2><span class="glyphicon glyphicon-picture"></span> Fotoğraf Paylaş</h2>
+        <p>Sorularında yada yorumlarında metin yerine istersen fotoğraf da kullanabilirsin. Sorunun fotoğrafını çek ve paylaş!</p>
+
+    </div>
+
+    <div class="col-6 col-sm-6 col-lg-4">
+        <h2><span class="glyphicon glyphicon-phone"></span> İster Bilgisayardan, İster Telefondan</h2>
+        <p>Web sitemiz platform bağımsızdır! İstersen telefondan girip kullan, istersen bilgisayardan istersen oyun konsolundan ne fark eder ki?</p>
+
+    </div>
+
+    <div class="col-6 col-sm-6 col-lg-4">
+        <h3><span class="glyphicon glyphicon-thumbs-up"></span> Daha Fazlası İçin Hemen Kayıt Ol!</h3>
+        <p><a class="btn btn-primary" href="@Href("~/Account/Kayitol")"><span class="glyphicon glyphicon-floppy-saved"></span> Kayıt Ol »</a></p>
+    </div>
+
+</div>
+<!--</div>-->

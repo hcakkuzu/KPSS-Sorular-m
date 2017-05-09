@@ -1,0 +1,245 @@
+﻿
+@{
+    var db=Database.Open("DB");
+    var isim=db.QueryValue("SELECT Name From Users WHERE UserID=@0",WebSecurity.CurrentUserId);
+    var soyIsim=db.QueryValue("SELECT Surname From Users WHERE UserID=@0",WebSecurity.CurrentUserId);
+    var bilgi=db.QuerySingle("SELECT * From Users WHERE UserID=@0",WebSecurity.CurrentUserId);
+
+}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="Bilgi Paylaşarak Çoğalır">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3">
+        <title>KPSS Sorularım | @Page.Title</title>
+        <link href="@Href("~/dist/css/bootstrap.min.css")" rel="stylesheet">
+        <link href="@Href("~/dist/css/font-awesome.min.css")" rel="stylesheet">
+        <link rel="stylesheet" href="@Href("~/dist/css/bootstrap_extra.css")" media="screen">
+        <link rel="stylesheet" href="@Href("~/dist/css/sidebar.css")" media="screen">
+        <link rel="stylesheet" href="@Href("~/dist/css/lightbox.css")" media="screen">
+    </head>
+    <body>
+        <!-- SPINNER!
+        <div id="load">
+            <div class="cssload-thecube">
+                <div class="cssload-cube cssload-c1"></div>
+                <div class="cssload-cube cssload-c2"></div>
+                <div class="cssload-cube cssload-c4"></div>
+                <div class="cssload-cube cssload-c3"></div>
+            </div>
+        </div>
+        -->
+
+
+        <div class="navbar navbar-fixed-top navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="@Href("~/")"><span class="glyphicon glyphicon-education"></span> KPSS SORULARIM</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        @if(WebSecurity.IsAuthenticated)
+                        {
+                            <li><a href="@Href("~/")"><span class="glyphicon glyphicon-list-alt"></span> Son 20 Soru</a></li>
+                            <li><a class="btn-primary" style="text-align:left!important;" href="@Href("~/SoruSor")"><span class="glyphicon glyphicon-plus"></span> Soru Sor</a></li>
+}
+else
+{
+                            <li><a href="#sonsorularilistele"><span class="glyphicon glyphicon-list-alt"></span> Siteye Gözat</a></li>
+                        }
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        @if(WebSecurity.IsAuthenticated)
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle btn-default btn-lg" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-user"></i>  @WebSecurity.CurrentUserName <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li class="sonuk text-center"><a href="@Href("~/Account/Profil")"><img alt="Foto" class="img-circle" width="60" height="auto" src="@Href(@Ortak.ProfilFotoUrlOlustur(bilgi.ProfilPhoto)+"?" + DateTime.Now.Ticks.ToString())" /><br>@isim @soyIsim</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="@Href("~/Iletisim")"><span class="glyphicon glyphicon-alert"></span> Yöneticiyle İletişim</a></li>
+                                    <li><a href="@Href("~/Account/ParolaDegistir")"><span class="glyphicon glyphicon-lock"></span> Parolamı Değiştir</a></li>
+                                    <li><a href="@Href("~/Account/CikisYap")"><span class="glyphicon glyphicon-off"></span> Çıkış Yap</a></li>
+                                </ul>
+                            </li>
+}
+else
+{
+                            <li><a href="@Href("~/Account/Kayitol")" class="btn-primary" style="text-align:left!important;"><span class="glyphicon glyphicon-floppy-disk"></span> Kayıt Ol</a></li>
+                            <li><a href="@Href("~/Account/GirisYap")"><span class="glyphicon glyphicon-ok"></span> Giriş Yap</a></li>
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        @if(Page.Menu==1){
+            <div id="wrapper" class="toggled">
+                <div id="sidebar-wrapper">
+                    <ul class="sidebar-nav">
+
+                        <li><a href="#Kapat" id="menuKapat"><i class="fa fa-bars"></i> Kategoriler</a></li>
+                        <li class="divider"></li>
+
+
+                        <li>
+                            <div class="">
+                                <a data-toggle="collapse" href="#collapse1">Genel Yetenek <span class="caret"></span></a>
+                            </div>
+                            <div id="collapse1" class="collapse">
+                                <ul class="list-group">
+                                    <li><a href="@Href("~/Sorular")?Bolum=Sayısal">Sayısal</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Sözel">Sözel</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Genel Kültür">Genel Kültür</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="">
+                                <a data-toggle="collapse" href="#collapse2">Diğer <span class="caret"></span></a>
+                            </div>
+                            <div id="collapse2" class="collapse">
+                                <ul class="list-group">
+                                    <li><a href="@Href("~/Sorular")?Bolum=Eğitim Bilimleri">Eğitim Bilimleri</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Hukuk">Hukuk</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=İktisat">İktisat</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=İşletme">İşletme</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Maliye">Maliye</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Muhaseb">Muhasebe</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Çal. Ekonomisi ve End. İlişkileri">Çal. Ekonomisi ve End. İlişkileri</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Ekonometri">Ekonometri</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=İstatistik">İstatistik</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Kamu Yönetimi">Kamu Yönetimi</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Uluslararası+İlişkiler">Uluslararası İlişkiler</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=İşletme">İşletme</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="">
+                                <a data-toggle="collapse" href="#collapse3">Yabancı Dil Öğretmenlikleri <span class="caret"></span></a>
+                            </div>
+                            <div id="collapse3" class="collapse">
+                                <ul class="list-group">
+                                    <li><a href="@Href("~/Sorular")?Bolum=İngilizce Öğretmenliği">İngilizce Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Almanca Öğretmenliği">Almanca Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Fransızca Öğretmenliği">Fransızca Öğretmenliği</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="">
+                                <a data-toggle="collapse" href="#collapse4">Öğretmenlikler <span class="caret"></span></a>
+                            </div>
+                            <div id="collapse4" class="collapse">
+                                <ul class="list-group">
+                                    <li><a href="@Href("~/Sorular")?Bolum=İlk. Matematik Öğretmenliği">İlk. Matematik Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Lise Matematik Öğretmenliği">Lise Matematik Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Sosyal Bil. Öğretmenliği">Sosyal Bil. Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Türk Dili ve Ede. Öğretmenliği">Türk Dili ve Ede. Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Türkçe Öğretmenliği">Türkçe Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Tarih Öğretmenliği">Tarih Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Coğrafya Öğretmenliği">Coğrafya Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Fen ve Tek. Öğretmenliği">Fen ve Tek. Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Biyoloji Öğretmenliği">Biyoloji Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Sınıf Öğretmenliği">Sınıf Öğretmenliği </a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Okul Öncesi Öğretmenliği">Okul Öncesi Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Fizik Öğretmenliği">Fizik Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Kimya Öğretmenliği">Kimya Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Rehber Öğretmenliği">Rehber Öğretmenliği</a></li>
+                                    <li><a href="@Href("~/Sorular")?Bolum=Din Kültürü Öğretmenliği">Din Kültürü Öğretmenliği</a></li>
+                                </ul>
+                            </div>
+                        </li>
+
+
+
+                    </ul>
+                </div>
+            </div>
+
+        }
+
+
+
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        @if(Page.Menu==1){<a href="#Ac" class="btn btn-default" id="menuAc"><i class="fa fa-bars"></i></a><br><br>}
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="navbar navbar-default navbar-fixed-bottom">
+            <div class="container">
+                <p class="navbar-text pull-left"> © 2016 KPSS Sorularım . Tüm Hakları Saklıdır.
+                </p>
+                <p class="navbar-text pull-right">
+                    <a href="https://www.facebook.com"><i class="fa fa-facebook-square fa-2x social-fb"></i></a>
+                    <a href="https://twitter.com"><i class="fa fa-twitter-square fa-2x social-tw"></i></a>
+                    <a href="https://plus.google.com"><i class="fa fa-google-plus-square fa-2x social-gp"></i></a>
+                    <a href="mailto:admin@gmail.com"><i class="fa fa-envelope-square fa-2x social-em"></i></a></p>
+            </div>
+
+
+        </div>
+
+
+        <!--/.container-->
+        <script src="@Href("~/dist/js/jquery.js")"></script>
+        <script src="@Href("~/dist/js/bootstrap.min.js")"></script>
+        <script src="@Href("~/dist/js/bootstrap_extra.js")"></script>
+
+        <script>
+            $("#menuKapat").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+             $("#menuAc").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+        </script>
+
+        <script>
+                       $( document ).ready(function() {      
+               var isMobile = window.matchMedia("only screen and (max-width: 760px)");
+            
+               if (isMobile.matches) {
+                   $("#wrapper").removeClass("toggled");
+               }
+            });
+        </script>
+
+        <script src="@Href("~/dist/js/layout.js")"></script>
+        <script src="@Href("~/dist/js/lightbox.js")"></script>
+        <script>
+                        document.onreadystatechange = function () {
+              var state = document.readyState
+              if (state == 'complete') {
+                  setTimeout(function(){
+                      document.getElementById('interactive');
+                     document.getElementById('load').style.visibility="hidden";
+                  },1000);
+              }
+            }
+        </script>
+        @RenderSection("JS",false)
+    </body>
+</html>

@@ -1,0 +1,85 @@
+﻿@{
+    if(WebSecurity.IsAuthenticated) {Response.Redirect("~/",true);}    
+
+    Layout="~/Shared/_Layout.cshtml";
+    Page.Menu=0;
+    Page.Title="Giriş Yap";
+    var mesaj="";
+
+    if(IsPost){
+    var kullaniciAdi = Request["kullaniciTxt"];
+    var parola = Request["parolaTxt"];
+    var db = Database.Open("DB");
+    var engel=db.QueryValue("select Ban from Users WHERE Username=@0",kullaniciAdi);
+
+    if(engel==1){
+        Response.Redirect("~/Shared/Hata?No=100");
+    }
+
+    if(WebSecurity.Login(kullaniciAdi,parola,true)){
+       Response.Redirect("~/",true);
+    }else{
+        mesaj="Kullanıcı adı yada parolayı yanlış girdin!";
+    }
+    }
+}
+
+<div class="mainbox col-md-8 col-md-offset-2 col-xs-12 col-sm-12">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">Giriş Yap</div>
+            <!-- <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Parolamı Unuttum?</a></div>-->
+        </div>
+
+        <div style="padding-top:30px" class="panel-body">
+
+            <form id="loginform" class="form-horizontal" role="form" method="post">
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input id="login-username" type="text" class="form-control" name="kullaniciTxt" value="" placeholder="Kullanıcı Adı" required>
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                    <input id="login-password" type="password" class="form-control" name="parolaTxt" placeholder="Parola" required>
+                </div>
+
+                @if(!String.IsNullOrEmpty(mesaj))
+                {
+                    <p class="alert alert-danger">@mesaj</p>
+                }
+
+                <div style="margin-top:10px" class="form-group">
+                    <!-- Button -->
+                    <div class="col-sm-12 controls">
+                        <button type="submit" id="btn-login" class="btn btn-success">Giriş Yap  </button>
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-12 control">
+                        <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%">
+                                            Hesabın Yok Mu!
+                            <a href="@Href("~/Account/Kayitol")">
+                                          Hemen Hesap Oluştur
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="form-group">
+                <div class="col-md-12 control">
+                    <div class="well info">
+                        <p><i class="fa fa-info-circle"></i> Yukarıdaki formu kullanarak sisteme giriş yapıp, kullanmaya başlayabilirsin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

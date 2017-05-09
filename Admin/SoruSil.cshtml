@@ -1,0 +1,36 @@
+﻿@{
+
+       if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+
+
+        var uID=Request.QueryString["id"];
+        if(String.IsNullOrEmpty(uID)){
+            Response.Redirect("~/Admin/Sorular",true);
+        }else{
+
+            var yorumlar=db.Query("SELECT YorumID From Yorum WHERE SoruID=@0",uID);
+            foreach(var x in yorumlar){
+                db.Execute("DELETE From Begenilme WHERE YorumID=@0",x.YorumID);
+            }
+
+            db.Execute("DELETE From Soru WHERE SoruID=@0",uID);
+            db.Execute("DELETE From Yorum WHERE SoruID=@0",uID);
+            Response.Redirect("~/Admin/Sorular",true);
+        }
+        
+        
+
+        
+
+
+
+}
+

@@ -1,0 +1,55 @@
+﻿@{
+        Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+    var db = Database.Open("DB");
+    var tumGorusmeler = db.Query("SELECT * FROM Users INNER JOIN Iletisim ON Iletisim.UserID=Users.UserID");
+}
+
+<div class="row-fluid">
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Mesajlar</h2></div>
+
+        </div>
+    </div>
+   
+
+    <div class="row col-md-12 custyle">
+   
+        <div class="table-responsive">
+    <table class="table table-striped custab">
+    <thead>
+    
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>E-Posta</th>
+            <th>Mesaj</th>
+            <th>Tarih</th>
+            <th class="text-center">İşlemler</th>
+        </tr>
+    </thead>@foreach(var x in tumGorusmeler){
+                var Tarih=x.Tarih;
+               <tr>
+                <td>@x.IletisimID</td>
+                <td>@x.Username</td>
+                <td>@x.Email</td>
+                <td>@x.Metin</td>
+                <td>@Tarih.ToString("dd/MM/yy hh:mm")</td>
+                <td class="text-center"><a href="@Href("~/Admin/MesajSil")?id=@x.IletisimID" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span>  Sil</a></td>
+            </tr> 
+            }
+            
+            
+    </table></div>
+    </div>
+
+    <!-- /block -->
+</div>

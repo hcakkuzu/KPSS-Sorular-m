@@ -1,0 +1,59 @@
+﻿@{
+    Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+    var toplamUyeSayisi=db.QueryValue("SELECT COUNT(*) FROM Users WHERE Ban=0")-1;
+    var toplamSoruSayisi=db.QueryValue("SELECT COUNT(*) FROM Soru");
+    var toplamYorumSayisi=db.QueryValue("SELECT COUNT(*) FROM Yorum");
+}
+<div class="row-fluid">
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>İstatistikler</h2></div>
+
+        </div>
+    </div>
+    <div class="col-md-3">
+        <a class="info-tiles tiles-inverse has-footer" href="@Href("~/Admin/Uyeler")">
+            <div class="tiles-heading">
+                <div class="tiles-title-left">Toplam Üye Sayısı</div>
+                <div class="tiles-title-right"><i class="fa fa-user"></i></div>
+            </div>
+            <div class="tiles-body">
+                <div class="text-center">@toplamUyeSayisi</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a class="info-tiles tiles-midnightblue has-footer" href="@Href("~/Admin/Sorular")">
+            <div class="tiles-heading">
+                <div class="tiles-title-left">Toplam Soru Sayısı</div>
+                <div class="tiles-title-right"><i class="fa fa-list-alt"></i></div>
+            </div>
+            <div class="tiles-body">
+                <div class="text-center">@toplamSoruSayisi</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a class="info-tiles tiles-blue has-footer" href="@Href("~/Admin/Yorumlar")">
+            <div class="tiles-heading">
+                <div class="tiles-title-left">Toplam Yorum Sayısı</div>
+                <div class="tiles-title-right"><i class="fa fa-comments-o"></i></div>
+            </div>
+            <div class="tiles-body">
+                <div class="text-center">@toplamYorumSayisi</div>
+            </div>
+        </a>
+    </div>
+  
+    <!-- /block -->
+</div>

@@ -1,0 +1,56 @@
+﻿@functions{
+
+public static string guvenliSql(string inputSQL)
+{
+  return inputSQL.Replace("'", "''");
+}
+
+    public static string convertTimeElapsed(DateTime hamTarih){
+        var yazilanTarih="";
+        TimeSpan tarih=DateTime.Now-hamTarih;
+
+        if(tarih.TotalHours>=24)
+        {
+            yazilanTarih=tarih.TotalDays.ToString("0")+ " Gün Önce";
+        }
+        else if(tarih.TotalHours<24)
+        {
+            if(tarih.TotalMinutes>=60)
+            {
+                yazilanTarih=tarih.TotalHours.ToString("0")+ " Saat Önce";
+            }
+            else
+            {
+                yazilanTarih=tarih.TotalMinutes.ToString("0")+ " Dakika Önce";
+            }
+        }
+        return yazilanTarih;
+    }
+
+
+    public static string ProfilFotoUrlOlustur(string x){
+        var profilFotoURL = x;
+
+       if(String.IsNullOrEmpty(profilFotoURL)){
+           profilFotoURL="~/img/profil.png";
+       }else{
+           profilFotoURL="~/img/" + x;
+       }
+
+       return profilFotoURL;
+    }
+
+
+     public static int BegenmeSayisiGetir(int x,string y){
+      var db=Database.Open("DB");
+      var sonucBegenme = db.QueryValue("SELECT Count(*) FROM Begenilme WHERE YorumID=@0 AND Durum=1",x);
+      var sonucBegenmeme = db.QueryValue("SELECT Count(*) FROM Begenilme WHERE YorumID=@0 AND Durum=0",x);
+       
+      if(y=="Begenme"){
+          return sonucBegenme;
+      }else{
+          return sonucBegenmeme;
+      }
+    }
+   
+}

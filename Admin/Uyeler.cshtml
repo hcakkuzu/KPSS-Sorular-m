@@ -1,0 +1,92 @@
+﻿@{
+        Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+    var tumUyeler = db.Query("SELECT * FROM Users WHERE BAN=0");
+    var tumEngelliUyeler = db.Query("SELECT * FROM Users WHERE BAN=1");
+}
+
+<div class="row-fluid">
+
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Engelli Üyeler</h2></div>
+
+        </div>
+    </div>
+   
+
+    <div class="row col-md-12 custyle">
+   
+        <div class="table-responsive">
+    <table class="table table-striped custab">
+    <thead>
+    
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>E-Posta</th>
+            <th>İsim</th>
+            <th class="text-center">İşlemler</th>
+        </tr>
+    </thead>@foreach(var x in tumEngelliUyeler){
+               <tr>
+                <td>@x.UserID</td>
+                <td>@x.Username</td>
+                <td>@x.Email</td>
+                <td>@x.Name @x.Surname</td>
+                <td class="text-center"><a href="@Href("~/Admin/EngeliKaldir")?id=@x.UserID" class="btn btn-warning btn-xs"><i class="fa fa-ban" aria-hidden="true"></i> Engeli Kaldır</a></td>
+            </tr> 
+            }
+            
+            
+    </table></div>
+
+
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Aktif Üyeler</h2></div>
+
+        </div>
+    </div>
+   
+
+    <div class="row col-md-12 custyle">
+   
+        <div class="table-responsive">
+    <table class="table table-striped custab">
+    <thead>
+    
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>E-Posta</th>
+            <th>İsim</th>
+            <th class="text-center">İşlemler</th>
+        </tr>
+    </thead>@foreach(var x in tumUyeler){
+               <tr>
+                <td>@x.UserID</td>
+                <td>@x.Username</td>
+                <td>@x.Email</td>
+                <td>@x.Name @x.Surname</td>
+                <td class="text-center"><a href="@Href("~/Admin/UyeEngelle")?id=@x.UserID" class="btn btn-danger btn-xs"><i class="fa fa-ban" aria-hidden="true"></i> Engelle</a></td>
+            </tr> 
+            }
+            
+            
+    </table></div>
+    </div>
+
+    <!-- /block -->
+</div>
+</div>

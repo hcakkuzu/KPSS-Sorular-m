@@ -1,0 +1,28 @@
+﻿@{
+       if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+
+
+        var uID=Request.QueryString["id"];
+        if(String.IsNullOrEmpty(uID)){
+            Response.Redirect("~/Admin/Uyeler",true);
+        }else{
+            db.Execute("UPDATE Users SET Ban=1 WHERE UserID=@0",uID);
+            Response.Redirect("~/Admin/Uyeler",true);
+        }
+        
+        
+
+        
+
+
+
+}
+

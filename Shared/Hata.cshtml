@@ -1,0 +1,52 @@
+﻿@{
+
+     Layout="~/Shared/_Layout.cshtml";
+    Page.Menu=0;
+    Page.Title="Hoppala!";
+    string no = Request.QueryString["No"];
+    if(no==null || no=="") {no="400";}
+}
+<div class="mainbox col-md-8 col-md-offset-2 col-xs-12 col-sm-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">Hata No:@no
+            </div>
+        </div>
+        <div style="padding-top:30px" class="panel-body">
+
+            <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
+
+            @if(no=="500")
+            {
+                <p class="alert alert-warning">Yapmaya çalıştığın işlem için giriş yapman gerekli!</p><br>
+                <a href="@Href("~/Account/GirisYap")" class="btn btn-primary">Giriş Yap</a>
+}
+else if(no=="400")
+{
+                <p class="alert alert-info">Ulaşmaya çalıştığın sayfayı bulamadık!</p><br>
+                <a href="@Href("~/")" class="btn btn-primary">Anasayfa</a>
+}
+else if(no=="300")
+{
+                <p class="alert alert-danger">Yetkini aşan yerlere girmeye çalışıyorsun...</p><br>
+                <a href="@Href("~/")" class="btn btn-primary">Anasayfa</a>
+            }
+            else if(no=="100")
+{
+                <p class="alert alert-danger">Hesabınız engellenmiş !</p><br>
+                <a href="@Href("~/")" class="btn btn-primary">Anasayfa</a>
+            }
+
+
+
+        </div>
+
+    </div>
+    <div class="form-group">
+        <div class="col-md-12 control">
+            <div class="well info">
+                <p><i class="fa fa-info-circle"></i> Yanlış birşey yaptığında bu sayfa ile karşılaşırsın. <a href="#" onclick="window.history.go(-1); return false;">Geri dön</a> ve tekrar dene</p>
+            </div>
+        </div>
+    </div>
+</div>

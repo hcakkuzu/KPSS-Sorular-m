@@ -1,0 +1,65 @@
+﻿@{
+        Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+    var db = Database.Open("DB");
+    var tumGorusmeler = db.Query("SELECT * FROM Users INNER JOIN Soru ON Soru.UserID=Users.UserID INNER JOIN Kategori ON Kategori.KategoriID=Soru.KategoriID");
+}
+
+<div class="row-fluid">
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Sorular</h2></div>
+
+        </div>
+    </div>
+   
+
+    <div class="row col-md-12 custyle">
+   
+        <div class="table-responsive">
+    <table class="table table-striped custab">
+    <thead>
+    
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>Kategori</th>
+            <th>Başlık</th>
+            <th>Açıklama</th>
+            <th>Fotoğraf</th>
+            <th>Tarih</th>
+            <th class="text-center">İşlemler</th>
+        </tr>
+    </thead>@foreach(var x in tumGorusmeler){
+                var Tarih=x.SorulmaTarihi;
+               <tr>
+                <td>@x.SoruID</td>
+                <td>@x.Username</td>
+                <td>@x.Ad</td>
+                <td>@x.Baslik</td>
+                <td>@x.Aciklama</td>
+                <td>
+                    @if(x.Foto=="null"){
+                        <s>Yok</s>
+                    }else{
+                <a class="image-popup-fit-width" href="@Href("/img/soruFoto/"+x.Foto)" title="@x.Baslik">
+                        <img src="@Href("/img/soruFoto/"+x.Foto)" height="50" alt="Soru resmi"></a>}
+</td>
+                <td>@Tarih.ToString("dd/MM/yy hh:mm")</td>
+                <td class="text-center"><a href="@Href("~/Admin/SoruSil")?id=@x.SoruID" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span>  Sil</a></td>
+            </tr> 
+            }
+            
+            
+    </table></div>
+    </div>
+
+    <!-- /block -->
+</div>

@@ -1,0 +1,32 @@
+﻿@{
+   var db=Database.Open("DB");
+   var tip=Request["IslemTipi"];
+   var sid=Request["SoruID"];
+   var Yid=Request["dataYorumID"];
+
+       if(String.IsNullOrEmpty(tip)){ //tip verilmemişse
+           Response.Redirect("~/Shared/Hata?No=400",true);
+       }
+
+       if(!WebSecurity.IsAuthenticated)
+       {
+            Response.Redirect("~/Shared/Hata?No=500",true);
+       }
+
+   var begendiMi=db.QueryValue("SELECT Count(*) FROM Begenilme WHERE YorumID=@0 AND UserID=@1",Yid,WebSecurity.CurrentUserId);
+
+   if(begendiMi>0){
+       Response.Redirect("~/Shared/Hata?No=400",true);
+   }else{
+
+
+      if(tip=="Begen"){
+          db.Execute("INSERT INTO Begenilme(YorumID,UserID,Durum) VALUES(@0,@1,1)",Yid,WebSecurity.CurrentUserId);
+      }else if(tip=="Begenme"){
+          db.Execute("INSERT INTO Begenilme(YorumID,UserID,Durum) VALUES(@0,@1,0)",Yid,WebSecurity.CurrentUserId);
+      }
+
+      Response.Redirect("~/SoruOku?SoruID="+sid,true);
+
+   }
+}

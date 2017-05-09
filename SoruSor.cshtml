@@ -1,0 +1,148 @@
+﻿@{
+        if(!WebSecurity.IsAuthenticated) {Response.Redirect("~/Shared/Hata?No=500",true);}    
+
+    Layout="~/Shared/_Layout.cshtml";
+    Page.Menu=1;
+    Page.Title="Soru Gönder";
+    bool hata=true;
+    var fotoDosyaAdi = "";
+    if(IsPost)
+    {
+        var db=Database.Open("DB");
+        string baslik=Request["baslikTxt"].ToString();
+        string aciklama=Request["aciklamaTxt"].ToString();
+        string katID=Request["katTxt"].ToString();
+
+
+            var uploadEdilen = Request.Files[0];
+
+            if(uploadEdilen.ContentLength <= 0)
+            {
+                fotoDosyaAdi="null";
+                hata=false;
+            }
+            else
+            {
+                fotoDosyaAdi = WebSecurity.CurrentUserId.ToString()+"_"+DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss")+".jpg";
+                var klasorYolu = Server.MapPath("~/img/soruFoto/" + fotoDosyaAdi);
+                uploadEdilen.SaveAs(klasorYolu);
+                hata=false;
+            }
+
+        if(!hata){
+            db.Execute("INSERT INTO Soru(Baslik,Aciklama,Foto,KategoriID,UserID) VALUES(@0,@1,@2,@3,@4)",baslik,aciklama,fotoDosyaAdi,katID,WebSecurity.CurrentUserId);
+            //Soruya Yönlendirme
+            Response.Redirect("~/SoruOku?SoruID="+db.QueryValue("SELECT TOP 1 SoruID FROM Soru WHERE UserID=@0 ORDER BY SorulmaTarihi DESC",WebSecurity.CurrentUserId).ToString(),true);
+        }
+
+    }
+}
+
+<div class="mainbox col-md-8 col-md-offset-2 col-xs-12 col-sm-12">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title"><i class="fa fa-cloud-upload"></i> Soru Gönder</div>
+        </div>
+
+        <div style="padding-top:30px" class="panel-body">
+
+            <form id="loginform" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-file"></i></span>
+                    <input id="login-username" type="text" class="form-control" name="baslikTxt" value="" placeholder="Başlık" required>
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+                    <textarea class="form-control" name="aciklamaTxt" placeholder="Soru Açıklaması"></textarea>
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                    <select class="selectpicker form-control show-menu-arrow show-tick dropup" data-size="6" data-width="100%" data-style="btn-default" name="katTxt" required title="Kategori Seç">
+                        <optgroup label="Genel Yetenek">
+                        <option value="1">Sayısal</option>
+                        <option value="2">Sözel</option>
+                        <option value="3">Genel Kültür</option>
+                        </optgroup>
+                        <optgroup label="Diğer">
+                        <option value="4">Eğitim Bilimleri</option>
+                        <option value="5">Hukuk</option>
+                        <option value="6">İktisat</option>
+                        <option value="7">İşletme</option>
+                        <option value="8">Maliye</option>
+                        <option value="9">Muhasebe</option>
+                        <option value="10">Çalışma Eko. ve End. İlişkileri</option>
+                        <option value="11">Ekonometri</option>
+                        <option value="12">İstatistik</option>
+                        <option value="13">Kamu Yönetimi</option>
+                        <option value="14">Uluslararası İlişkiler</option>
+                        <option value="15">İşletme</option>
+                        </optgroup>
+                        <optgroup label="Yabancı Dil Öğretmenlikleri">
+                        <option value="16">İngilizce Öğretmenliği</option>
+                        <option value="17">Almanca Öğretmenliği</option>
+                        <option value="18">Fransızca Öğretmenliği</option>
+                        </optgroup>
+                        <optgroup label="Diğer">
+                        <option value="19">İlk. Matematik Öğretmenliği</option>
+                        <option value="20">Lise Matematik Öğretmenliği</option>
+                        <option value="21">Sosyal Bil. Öğretmenliği</option>
+                        <option value="22">Türk Dili ve Ede. Öğretmenliği</option>
+                        <option value="23">Türkçe Öğretmenliği</option>
+                        <option value="24">Tarih Öğretmenliği</option>
+                        <option value="25">Coğrafya Öğretmenliği</option>
+                        <option value="26">Fen ve Tek. Öğretmenliği</option>
+                        <option value="27">Biyoloji Öğretmenliği</option>
+                        <option value="28">Sınıf Öğretmenliği</option>
+                        <option value="29">Okul Öncesi Öğretmenliği</option>
+                        <option value="30">Fizik Öğretmenliği</option>
+                        <option value="31">Kimya Öğretmenliği</option>
+                        <option value="32">Rehber Öğretmenliği</option>
+                        <option value="33">Din Kültürü Öğretmenliği</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <div class="fileupload fileupload-new" data-provides="fileupload">
+                        <span class="btn btn-warning btn-file"><span class="fileupload-new"><i class="fa fa-picture-o"></i> Fotoğraf Seç</span>
+                            <span class="fileupload-exists"><i class="fa fa-picture-o"></i> Değiştir</span>         <input type="file" name="foto" /></span>
+                        <span class="fileupload-preview"></span>
+                        <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+                    </div>
+                </div>
+
+                <div style="margin-top:10px" class="form-group">
+                    <!-- Button -->
+                    <div class="col-sm-12 controls">
+                        <button type="submit" id="gonderBtn" class="btn btn-success"><i class="fa fa-check-circle-o"></i> Gönder</button>
+
+                    </div>
+                </div>
+            </form>
+            <div class="form-group">
+                <div class="col-md-12 control">
+                    <div class="well info">
+                        <p><i class="fa fa-info-circle"></i> İster sadece metin kullanarak sorunuzu paylaşabilirsiniz. İsterseniz de sorunuzun fotoğrafını çekip ekleyebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section JS
+{
+    <script>
+        !function(e){var t=function(t,n){this.$element=e(t),this.type=this.$element.data("uploadtype")||(this.$element.find(".thumbnail").length>0?"image":"file"),this.$input=this.$element.find(":file");if(this.$input.length===0)return;this.name=this.$input.attr("name")||n.name,this.$hidden=this.$element.find('input[type=hidden][name="'+this.name+'"]'),this.$hidden.length===0&&(this.$hidden=e('<input type="hidden" />'),this.$element.prepend(this.$hidden)),this.$preview=this.$element.find(".fileupload-preview");var r=this.$preview.css("height");this.$preview.css("display")!="inline"&&r!="0px"&&r!="none"&&this.$preview.css("line-height",r),this.original={exists:this.$element.hasClass("fileupload-exists"),preview:this.$preview.html(),hiddenVal:this.$hidden.val()},this.$remove=this.$element.find('[data-dismiss="fileupload"]'),this.$element.find('[data-trigger="fileupload"]').on("click.fileupload",e.proxy(this.trigger,this)),this.listen()};t.prototype={listen:function(){this.$input.on("change.fileupload",e.proxy(this.change,this)),e(this.$input[0].form).on("reset.fileupload",e.proxy(this.reset,this)),this.$remove&&this.$remove.on("click.fileupload",e.proxy(this.clear,this))},change:function(e,t){if(t==="clear")return;var n=e.target.files!==undefined?e.target.files[0]:e.target.value?{name:e.target.value.replace(/^.+\\/,"")}:null;if(!n){this.clear();return}this.$hidden.val(""),this.$hidden.attr("name",""),this.$input.attr("name",this.name);if(this.type==="image"&&this.$preview.length>0&&(typeof n.type!="undefined"?n.type.match("image.*"):n.name.match(/\.(gif|png|jpe?g)$/i))&&typeof FileReader!="undefined"){var r=new FileReader,i=this.$preview,s=this.$element;r.onload=function(e){i.html('<img src="'+e.target.result+'" '+(i.css("max-height")!="none"?'style="max-height: '+i.css("max-height")+';"':"")+" />"),s.addClass("fileupload-exists").removeClass("fileupload-new")},r.readAsDataURL(n)}else this.$preview.text(n.name),this.$element.addClass("fileupload-exists").removeClass("fileupload-new")},clear:function(e){this.$hidden.val(""),this.$hidden.attr("name",this.name),this.$input.attr("name","");if(navigator.userAgent.match(/msie/i)){var t=this.$input.clone(!0);this.$input.after(t),this.$input.remove(),this.$input=t}else this.$input.val("");this.$preview.html(""),this.$element.addClass("fileupload-new").removeClass("fileupload-exists"),e&&(this.$input.trigger("change",["clear"]),e.preventDefault())},reset:function(e){this.clear(),this.$hidden.val(this.original.hiddenVal),this.$preview.html(this.original.preview),this.original.exists?this.$element.addClass("fileupload-exists").removeClass("fileupload-new"):this.$element.addClass("fileupload-new").removeClass("fileupload-exists")},trigger:function(e){this.$input.trigger("click"),e.preventDefault()}},e.fn.fileupload=function(n){return this.each(function(){var r=e(this),i=r.data("fileupload");i||r.data("fileupload",i=new t(this,n)),typeof n=="string"&&i[n]()})},e.fn.fileupload.Constructor=t,e(document).on("click.fileupload.data-api",'[data-provides="fileupload"]',function(t){var n=e(this);if(n.data("fileupload"))return;n.fileupload(n.data());var r=e(t.target).closest('[data-dismiss="fileupload"],[data-trigger="fileupload"]');r.length>0&&(r.trigger("click.fileupload"),t.preventDefault())})}(window.jQuery)
+    </script>
+    <script>
+        $("form").submit(function() {$("#gonderBtn").html('<i class="fa fa-spinner fa-pulse"></i> Yükleniyor...');});    
+    </script>
+}

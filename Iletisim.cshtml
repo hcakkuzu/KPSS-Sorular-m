@@ -1,0 +1,65 @@
+﻿@{
+    Layout="~/Shared/_Layout.cshtml";
+    
+    Page.Menu=1;
+    if(!WebSecurity.IsAuthenticated)
+    {
+        Response.Redirect("~/Shared/Hata?No=500",true);
+    }
+    var mesaj="";
+    if(IsPost){
+        
+    var db = Database.Open("DB");
+        
+    db.Execute("INSERT INTO Iletisim(UserID,Metin) VALUES(@0,@1)",WebSecurity.CurrentUserId,Request["mesajTxt"]);
+    mesaj="Başarıyla gönderildi!";
+    }
+
+}
+
+
+
+
+<div class="mainbox col-md-8 col-md-offset-2 col-xs-12 col-sm-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">Yöneticiyle İletişim</div>
+            </div>
+            <div style="padding-top:30px" class="panel-body">
+
+                <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
+
+                <form class="form-horizontal" role="form" method="post">
+
+                    @if(IsPost){
+                       <p class="alert alert-success">@mesaj</p> 
+                    }
+
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-info-circle"></i></span>
+                        <textarea name="mesajTxt" style="resize: vertical;" class="form-control" rows="5"></textarea>
+                    </div>
+
+                    <div style="margin-top:10px" class="form-group">
+                        <!-- Button -->
+                        <div class="col-sm-12 controls">
+                            <button type="submit" id="btn-login" class="btn btn-success">Gönder</button></button>
+
+                        </div>
+                    </div>
+                </form>
+                <div class="form-group">
+                <div class="col-md-12 control">
+                    <div class="well info">
+                        <p><i class="fa fa-info-circle"></i> Bu sayfayı kullanarak yöneticiye istediğiniz mesajı gönderebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

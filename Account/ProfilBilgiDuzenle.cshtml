@@ -1,0 +1,141 @@
+﻿@{
+       if(!WebSecurity.IsAuthenticated)
+   {
+       Response.Redirect("~/Shared/Hata?No=500",true);
+   }
+    Layout="~/Shared/_Layout.cshtml";
+    var db = Database.Open("DB");
+    Page.Menu=1;
+    Page.Title="Profil Düzenle";
+
+    if(IsPost){
+
+    var isim = Request["isimTxt"];
+    var soyisim = Request["soyisimTxt"];
+    var cinsiyet  = Request["cinsiyetTxt"];
+    var website  = Request["websiteTxt"];
+    var il = Request["ilTxt"];
+    var universite = Request["universiteTxt"];
+    var meslek = Request["meslekTxt"];
+    
+       db.Execute("UPDATE Users SET Name=@0,Surname=@1,Cinsiyet=@2,Website=@3,Il=@4,Universite=@5,Meslek=@6 WHERE UserID=@7",isim,soyisim,cinsiyet,website,il,universite,meslek,WebSecurity.CurrentUserId);
+       Response.Redirect("~/Account/Profil",true);
+   
+    }
+
+    var bilgiler=db.QuerySingle("SELECT * FROM Users WHERE UserID=@0",WebSecurity.CurrentUserId);
+
+}
+
+<div class="mainbox col-md-8 col-md-offset-2 col-xs-12 col-sm-12">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title"><span class="glyphicon glyphicon-user"></span> @WebSecurity.CurrentUserName</div>
+        </div>
+        <div style="padding-top:30px" class="panel-body">
+
+            <form class="form-horizontal" role="form" method="post">
+
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon" style="min-width: 125px;text-align: left;"><span class="glyphicon glyphicon-pencil"></span> İsim</span>
+                    @if(bilgiler.Name!=""){
+                        <input id="login-username" type="text" class="form-control" name="isimTxt" value="@bilgiler.Name" placeholder="Ad" required>
+                    }else{
+                        <input id="login-username" type="text" class="form-control" name="isimTxt" value="" placeholder="Ad" required>
+                    }
+                    
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"  style="min-width: 125px;text-align: left;"><span class="glyphicon glyphicon-pencil"></span> Soyisim</span>
+                    @if(bilgiler.Surname!=""){
+                                <input id="login-username" type="text" class="form-control" name="soyisimTxt" value="@bilgiler.Surname" placeholder="Soyad" required>
+                        }else{
+                                <input id="login-username" type="text" class="form-control" name="soyisimTxt" value="" placeholder="Soyad" required>
+                            }
+                    
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon"  style="min-width: 125px;text-align: left;"><i class="fa fa-venus-mars"></i> Cinsiyet</span>
+                    <select class="form-control" name="cinsiyetTxt">
+                         @if(bilgiler.Cinsiyet!=""){
+                             if(bilgiler.Cinsiyet=="Erkek"){
+                                 <option value="" disabled>Seçiniz</option>
+                                 <option value="Erkek" selected="selected">Erkek</option>
+                                 <option value="Kadın">Kadın</option>
+                             }else{
+                                 <option value="" disabled>Seçiniz</option>
+                                 <option value="Erkek">Erkek</option>
+                                 <option value="Kadın" selected="selected">Kadın</option>
+                             }
+                         }else{
+                             <option value="" disabled selected="selected">Seçiniz</option>
+                             <option value="Erkek">Erkek</option>
+                             <option value="Kadın">Kadın</option>
+                         }
+
+                      
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon" style="min-width: 125px;text-align: left;"><i class="fa fa-globe"></i> Website</span>
+                    @if(bilgiler.Website!=""){
+                        <input id="login-username" type="text" class="form-control" name="websiteTxt" value="@bilgiler.Website" placeholder="Website">
+                    }else{
+                        <input id="login-username" type="text" class="form-control" name="websiteTxt" value="" placeholder="Website">
+                    }
+                   
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon" style="min-width: 125px;text-align: left;"><i class="fa fa-home"></i> İl</span>
+                    @if(bilgiler.Il!=""){
+                        <input id="login-username" type="text" class="form-control" name="ilTxt" value="@bilgiler.Il" placeholder="İl">
+                    }else{
+                        <input id="login-username" type="text" class="form-control" name="ilTxt" value="" placeholder="İl">
+                    }
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon" style="min-width: 125px;text-align: left;"><i class="fa fa-university"></i> Üniversite</span>
+                    @if(bilgiler.Universite!=""){
+                        <input id="login-username" type="text" class="form-control" name="universiteTxt" value="@bilgiler.Universite" placeholder="Üniversite">
+                    }else{
+                        <input id="login-username" type="text" class="form-control" name="universiteTxt" value="" placeholder="Üniversite">
+                    }
+                </div>
+
+                <div style="margin-bottom: 25px" class="input-group">
+                    <span class="input-group-addon" style="min-width: 125px;text-align: left;"><i class="fa fa-at"></i> Meslek</span>
+                    @if(bilgiler.Meslek!=""){
+                        <input id="login-username" type="text" class="form-control" name="meslekTxt" value="@bilgiler.Meslek" placeholder="Meslek">
+                    }else{
+                        <input id="login-username" type="text" class="form-control" name="meslekTxt" value="" placeholder="Meslek">
+                    }
+                </div>
+
+
+               
+                <div style="margin-top:10px" class="form-group">
+                    <!-- Button -->
+                    <div class="col-sm-12 controls">
+                        <button type="submit" id="btn-register" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i> Düzenle</button>
+                    </div>
+                </div>
+
+
+            </form>
+            <div class="form-group">
+                <div class="col-md-12 control">
+                    <div class="well info">
+                        <p><i class="fa fa-info-circle"></i>  Yukarıdaki formu kullanarak profil bilgilerinizi düzenleyebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

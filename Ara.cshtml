@@ -1,0 +1,129 @@
+﻿@{
+    Layout="~/Shared/_Layout.cshtml";
+    
+    Page.Menu=1;
+    if(!WebSecurity.IsAuthenticated)
+    {
+        Response.Redirect("~/Shared/Hata?No=500",true);
+    }
+    var db = Database.Open("DB");
+    string q="";
+    try{
+        q=Request.QueryString["Q"];
+    }catch{
+        Response.Redirect("~/");
+    }
+    
+    q=Ortak.guvenliSql(q);
+
+
+    string aktifSayfa=Request.QueryString["Sayfa"];
+    if(String.IsNullOrEmpty(aktifSayfa)){aktifSayfa="1";}
+    var sonSoruID=0;
+
+
+    int kayitSayisi=db.QueryValue("SELECT Count(*) From Soru Soru WHERE Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%'",q);
+    var kalan = kayitSayisi % 20;
+    var toplamSayfaSayisi=0;
+    if(kalan==0){
+        toplamSayfaSayisi=kayitSayisi/20;
+    }else{
+        toplamSayfaSayisi=(kayitSayisi/20)+1;
+    }
+    IEnumerable<dynamic> sonuc;
+    if(aktifSayfa!="1"){
+        var kayitlar2 = db.Query("SELECT TOP "+ (aktifSayfa.AsInt()-1)*20 +" SoruID From Soru WHERE Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%' ORDER BY SoruID ASC");
+    
+        List<int> list = new List<int>();
+        foreach(var x in kayitlar2){
+            list.Add(Convert.ToInt32(x.SoruID));
+        }
+        sonSoruID=list.Max();
+
+
+        sonuc = db.Query("SELECT TOP 20 * FROM Soru INNER JOIN Kategori ON Kategori.KategoriID=Soru.KategoriID INNER JOIN Users ON Users.UserID=Soru.UserID WHERE (Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%') AND SoruID>@1",q,sonSoruID);
+    }else{
+        sonuc = db.Query("SELECT TOP 20 * FROM Soru INNER JOIN Kategori ON Kategori.KategoriID=Soru.KategoriID INNER JOIN Users ON Users.UserID=Soru.UserID WHERE Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%'",q);
+    }
+
+
+
+
+   // var sonuc=db.Query("SELECT TOP 20 * FROM Soru INNER JOIN Kategori ON Kategori.KategoriID=Soru.KategoriID INNER JOIN Users ON Users.UserID=Soru.UserID WHERE Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%'");
+    var sonucSayisi=db.QueryValue("SELECT TOP 20 Count(*) FROM Soru INNER JOIN Kategori ON Kategori.KategoriID=Soru.KategoriID INNER JOIN Users ON Users.UserID=Soru.UserID WHERE Baslik LIKE '%"+q.ToString()+"%' OR Aciklama LIKE '%"+q.ToString()+"%'");
+    
+    Page.Title=q.ToString();
+    Page.Title+=" için sonuçlar";
+}
+
+
+<div class="container">
+    <div class="row">
+        <h2 class="text-center muted">Tüm Sorular Arasında Arayın</h2>
+        <form action="Ara" method="get">
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <form method="get" action="@Href("~/Ara")">
+                        <input type="text" class="search-query form-control" placeholder="Ara" name="Q" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-warning" type="submit">
+                                <span class=" glyphicon glyphicon-search"></span>
+                            </button>
+                        </span>
+                    </form>
+                </div>
+            </div>
+        </form>
+    </div>
+    <h2 class="text-center">Bulunan <u>@sonucSayisi</u> Arama Sonucu</h2>
+
+    <div class="row">
+        <div class="col-xs-12">
+
+            @foreach(var x in sonuc){
+
+                 <div class="[ panel panel-default ] panel-google-plus">
+               
+                <div class="panel-google-plus-tags">
+                    <ul>
+                        <li><span class="glyphicon glyphicon-tag"></span> @x.Ad</li>
+                    </ul>
+                </div>
+                <div class="panel-heading">
+                    <img class="[ img-circle pull-left ]" src="@Href(Ortak.ProfilFotoUrlOlustur(x.ProfilPhoto)+"?" + DateTime.Now.Ticks.ToString())" width="60" height="auto" alt="Soruyu Soran" />
+                    <h3 style="font-size: 20px;"><a class="panel-google-plus-image" href="@Href("~/SoruOku")?SoruID=@x.SoruID">@x.Baslik</a> </h3>
+                    <h5><span><span class="glyphicon glyphicon-user"></span> @x.Username</span> - <span><span class="glyphicon glyphicon-calendar"></span> @Ortak.convertTimeElapsed(x.SorulmaTarihi)</span> </h5>
+                </div>
+                <div class="panel-body">
+                    <p>@x.Aciklama</p>
+                    @if(x.Foto!="null"){
+                         <a class="image-popup-fit-width" href="@Href("/img/soruFoto/"+x.Foto)" title="@x.Baslik">
+                        <img src="@Href("/img/soruFoto/"+x.Foto)" height="75" width="auto" alt="Soru resmi"></a>
+                    }
+                </div>
+                <div class="panel-footer">
+                    <a href="@Href("~/SoruOku")?SoruID=@x.SoruID" type="button" class="[ btn btn-primary ]"><span class="glyphicon glyphicon-search"></span> Soruya Bak</a>
+                    
+                </div>
+               
+            </div>
+
+            }
+             <ul class="pagination">
+            @for(int i=1;i<=toplamSayfaSayisi;i++){
+                if(aktifSayfa==i.ToString()){
+                    <li class="active"><a href="@Href("~/Ara")?Q=@q&Sayfa=@i">@i <span class="sr-only">(current)</span></a></li>
+                }else{
+                    <li><a href="@Href("~/Ara")?Q=@q&Sayfa=@i">@i</a></li>
+                }
+
+            }
+            </ul>
+              
+        </div>
+    </div>
+
+
+
+
+</div>

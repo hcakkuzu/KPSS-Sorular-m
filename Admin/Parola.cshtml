@@ -1,0 +1,43 @@
+﻿@{
+    Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+
+    var db = Database.Open("DB");
+    
+    if(IsPost){
+        WebSecurity.ChangePassword(WebSecurity.CurrentUserName,Request["pass1"],Request["pass2"]);
+        Response.Redirect("~/Admin");
+    }
+
+}
+<div class="row-fluid">
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Parola Değiştir</h2></div>
+
+        </div>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+       <div class="col-md-8 col-md-offset-2">
+            <form method="post">
+                <div class="form-group">
+                    <input name="pass1" type="password" class="form-control" placeholder="Eski Parola"></input>
+                </div>
+                <div class="form-group">
+                    <input name="pass2" type="password" class="form-control" placeholder="Yeni Parola"></input>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary">Değiştir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>

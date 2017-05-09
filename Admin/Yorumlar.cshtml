@@ -1,0 +1,69 @@
+﻿@{
+        Layout="_LayoutAdmin.cshtml";
+    if(!WebSecurity.IsAuthenticated) {
+     Response.Redirect("~/Admin");
+    }
+    var kullanicininRolleri = Roles.GetRolesForUser(WebSecurity.CurrentUserName);
+    if(!kullanicininRolleri.Contains("Admin")){
+        Response.Redirect("~/Shared/Hata?No=300");
+    }
+    var db = Database.Open("DB");
+    var tumGorusmeler = db.Query("SELECT * FROM Users INNER JOIN Yorum ON Yorum.UserID=Users.UserID");
+}
+
+<div class="row-fluid">
+    <!-- block -->
+    <div class="block">
+        <div class="navbar navbar-inner block-header">
+            <div class="muted pull-left"><h2>Yorumlar</h2></div>
+
+        </div>
+    </div>
+   
+
+    <div class="row col-md-12 custyle">
+   
+        <div class="table-responsive">
+    <table class="table table-striped custab">
+    <thead>
+    
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>SoruID</th>
+            <th>Yorum</th>
+            <th>Fotoğraf</th>
+            <th>Beğenme</th>
+            <th>Beğenmeme</th>
+            <th>Tarih</th>
+            <th class="text-center">İşlemler</th>
+        </tr>
+    </thead>@foreach(var x in tumGorusmeler){
+                var Tarih=x.YorumTarihi;
+               <tr>
+                <td>@x.YorumID</td>
+                <td>@x.Username</td>
+                <td>@x.SoruID</td>
+                <td>@x.YorumMetni</td>
+                <td>
+                    @if(x.YorumFoto=="null"){
+                        <s>Yok</s>
+                    }else{
+                        
+                   
+                <a class="image-popup-fit-width" href="@Href("/img/yorumFoto/"+x.YorumFoto)" title="@x.Username">
+                        <img src="@Href("/img/yorumFoto/"+x.YorumFoto)" height="50" alt="Soru resmi"></a> }
+</td>
+                   <td>@db.QueryValue("SELECT Count(*) From Begenilme WHERE YorumID=@0 AND Durum=1",x.YorumID)</td>
+<td>@db.QueryValue("SELECT Count(*) From Begenilme WHERE YorumID=@0 AND Durum=0",x.YorumID)</td>
+                <td>@Tarih.ToString("dd/MM/yy hh:mm")</td>
+                <td class="text-center"><a href="@Href("~/Admin/YorumSil")?id=@x.YorumID" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span>  Sil</a></td>
+            </tr> 
+            }
+            
+            
+    </table></div>
+    </div>
+
+    <!-- /block -->
+</div>
